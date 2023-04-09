@@ -1,0 +1,14 @@
+[
+  {
+    "mvnDirectory": "directory1mvn",
+    "warDirectory": "directory1War"
+  },
+  {
+    "mvnDirectory": "directory2mvn",
+    "warDirectory": "directory2War"
+  },
+  {
+    "mvnDirectory": "directory3mvn",
+    "warDirectory": "directory3War"
+  }
+]
