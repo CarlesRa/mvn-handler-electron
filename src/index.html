@@ -7,8 +7,20 @@
 <body>
   <div class="container-fluid parent mt-3">
     <div class="row">
+      <div class="col-4">
+        <button class="btn btn-primary w-100">New release version</button>
+      </div>
+      <div class="col-4">
+        <select class="form-select w-100" aria-label="Default select example">
+          <option value="1">1.22</option>
+          <option value="2">1.23</option>
+          <option value="3">1.24</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
       <div class="col">
-        <button id="saveBtn" class="btn btn-success w-100">Save application data</button>
+        <button id="saveBtn" class="btn btn-success w-100">Save app data</button>
       </div>
       <div class="col">
         <button id="generateWars" class="btn btn-primary w-100">Generate Wars</button>
@@ -19,7 +31,10 @@
     </div>
     <div class="row">
       <div class="col">
-        <input required id="destinationPath" type="text" class="form-control" placeholder="Destination folder">
+        <div class="form-floating">
+          <input required id="destinationPath" type="text" class="form-control" placeholder="Destination folder">
+          <label for="destinationPath">WebApps path</label>
+        </div>
       </div>
     </div>
     <div class="row">

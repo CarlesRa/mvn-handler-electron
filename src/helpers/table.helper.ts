@@ -24,6 +24,7 @@ export const initTable = (rows: TableRow[]) => {
     const checkboxHeader: HTMLInputElement = document.querySelector('#headerCheckbox');
     checkboxHeader.checked = true;
   }
+  checkboxHandler(null);
 }
 
 export const setDestinationPathInput = (destinationFolder: string) => {
@@ -68,14 +69,14 @@ const getCheckbox = (): HTMLTableCellElement => {
   input.type = 'checkbox';
   input.className = 'form-check-input align-middle';
   input.checked = true;
-  input.addEventListener('click', () => checkBoxPressed(input));
+  input.addEventListener('click', () => checkboxHandler(input));
   tdCheckbox.appendChild(input);
   return tdCheckbox;
 }
 
-const checkBoxPressed = (checkbox: HTMLInputElement) => {
+const checkboxHandler = (checkbox: HTMLInputElement) => {
   const headerCheckbox: HTMLInputElement = document.querySelector('#headerCheckbox');
-  if (!checkbox.checked) {
+  if (checkbox && !checkbox.checked) {
     headerCheckbox.checked = false;
     return;
   }
@@ -83,7 +84,9 @@ const checkBoxPressed = (checkbox: HTMLInputElement) => {
   const checkBoxArray = Array.from(allCheckboxes);
   if (checkBoxArray.filter(checkbox => checkbox.checked).length === getTableData().length) {
     headerCheckbox.checked = true;
+    return;
   }
+  headerCheckbox.checked = false;
 }
 
 const getPathInput = (placeHolder: string, value?: string): HTMLTableCellElement => {

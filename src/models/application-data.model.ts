@@ -1,6 +1,7 @@
 import {TableRow} from "./table-row.model";
 
 export class ApplicationData {
+  releaseVersion: string;
   destinationPath: string;
   tableRows: TableRow[];
 

@@ -6,14 +6,8 @@ import {TableRow} from "../models/table-row.model";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const nodeFunctions = window['nodeFunctions'];;
+const nodeFunctions = window['nodeFunctions'];
 let initialData: ApplicationData;
-
-console.log(nodeFunctions);
-
-window.onload = () => {
-
-}
 
 const initEvents = (): void =>  {
   document.querySelector('#saveBtn').addEventListener('click', () => { saveData(); });
@@ -26,7 +20,6 @@ const initEvents = (): void =>  {
 }
 
 export const setInitialData = (): void =>  {
-  console.log(nodeFunctions)
   getInitialData().then((data: ApplicationData) => {
     if (!data) { return; }
     initialData = data;
@@ -50,7 +43,7 @@ export const getInitialData = (): Promise<ApplicationData> => {
 }
 
 const saveData = (): void =>  {
-  const tableData = getTableData().filter(row => row.warPath !== '' && row.mvnPath !== '' && row.active);
+  const tableData = getTableData();
   if (tableData.length === 0) {
     showNoRowsMessage();
     return;
@@ -66,7 +59,8 @@ const saveData = (): void =>  {
 }
 
 const generateWars = (): void =>  {
-  if (getTableData().length === 0) {
+  const tableData = getTableData().filter(row => row.warPath !== '' && row.mvnPath !== '' && row.active);
+  if (tableData.length === 0) {
     showNoRowsMessage();
     return;
   }
@@ -77,8 +71,14 @@ const generateWars = (): void =>  {
 
 const copyToTomcat = (): void => {
   const destinationPath: HTMLInputElement = document.querySelector('#destinationPath');
+  const tableData = getTableData().filter(row => row.warPath !== '' && row.mvnPath !== '' && row.active);
+
   if (!destinationPath.value) {
     alert('No destination Path saved');
+    return;
+  }
+  if (tableData.length === 0) {
+    showNoRowsMessage();
     return;
   }
   executeCommand('cp ./config.json /home/carlesra/Documents/') // TODO: add correct command
@@ -88,9 +88,8 @@ const copyToTomcat = (): void => {
 
 export const applicationDataChanges = () => {
   if (!initialData) { return; }
-  const sameData = isApplicationDataModified();
 
-  if (sameData) {
+  if (isApplicationDataModified()) {
     setBtnSaveClass('btn btn-success w-100');
     return;
   }

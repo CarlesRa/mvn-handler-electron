@@ -1,3 +1,3 @@
 export const showNoRowsMessage = () => {
-  alert('There is no data in the table');
+  alert('No rows selected');
 }

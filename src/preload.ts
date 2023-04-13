@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
-import {app, contextBridge, ipcRenderer} from "electron";
+import {contextBridge, ipcRenderer} from "electron";
 console.log('preload');
 
 ipcRenderer.invoke('get-user-data').then(data => {
@@ -13,10 +13,6 @@ ipcRenderer.invoke('get-user-data').then(data => {
         writeFileSync: fs.writeFileSync,
         exec: exec,
         path: path,
-        dirName: __dirname,
         baseDir: data,
     });
 });
-
-//import './helpers/data.helper';
-//import './helpers/table.helper.ts';
