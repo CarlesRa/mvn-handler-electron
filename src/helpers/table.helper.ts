@@ -2,19 +2,24 @@ import {TableRow} from "../models/table-row.model";
 import {spinnerHandler} from "../services/app-message.service";
 import {applicationDataChanges} from "./data.helper";
 
+window.onload = () => {
+  initSubscriptions();
+}
 
-// listeners
-document.querySelector('#add').addEventListener('click', () => addRow());
-document.querySelector('#headerCheckbox').addEventListener('change', () => checkboxHeaderHandler());
-document.querySelector('#destinationPath').addEventListener('change', () =>
-  applicationDataChanges());
+function initSubscriptions(): void {
+  // listeners
+  document.querySelector('#add').addEventListener('click', () => addRow(null, 'rows', true));
+  document.querySelector('#headerCheckbox').addEventListener('change', () => checkboxHeaderHandler());
+  document.querySelector('#destinationPath').addEventListener('change', () =>
+    applicationDataChanges());
 
-spinnerHandler.subscribe(() => { // TODO: test rxjs
-  alert('rxjs is fine!!!');
-});
+  spinnerHandler.subscribe(() => { // TODO: test rxjs
+    alert('rxjs is fine!!!');
+  });
+}
 
 export const initTable = (rows: TableRow[]) => {
-  rows.forEach(row => addRow(row))
+  rows.forEach(row => addRow(row, 'rows', row.active))
   if (rows.every(row => row.active)) {
     const checkboxHeader: HTMLInputElement = document.querySelector('#headerCheckbox');
     checkboxHeader.checked = true;
@@ -26,7 +31,7 @@ export const setDestinationPathInput = (destinationFolder: string) => {
   destinationFolderInput.value = destinationFolder;
 }
 
-const addRow = (tableRow?: TableRow, idTBody = 'rows'): void => {
+const addRow = (tableRow?: TableRow, idTBody = 'rows', isCheckBoxActive = true): void => {
   const tableData = getTableData();
   const lastRow = tableData[tableData.length - 1];
   if (lastRow && (lastRow.mvnPath === '' || lastRow.warPath === '')) {
@@ -40,7 +45,7 @@ const addRow = (tableRow?: TableRow, idTBody = 'rows'): void => {
   const warPathInput = getPathInput('WAR Path');
   const tdAction = getTdAction();
   trElement.addEventListener('click', () => applicationDataChanges());
-  checkbox.querySelector('input').checked = tableRow?.active ?? false;
+  checkbox.querySelector('input').checked = isCheckBoxActive;
   mvnPathInput.querySelector('input').value = tableRow?.mvnPath ?? '';
   warPathInput.querySelector('input').value = tableRow?.warPath ?? '';
   trElement.appendChild(checkbox);
@@ -62,6 +67,7 @@ const getCheckbox = (): HTMLTableCellElement => {
   const input = document.createElement('input');
   input.type = 'checkbox';
   input.className = 'form-check-input align-middle';
+  input.checked = true;
   input.addEventListener('click', () => checkBoxPressed(input));
   tdCheckbox.appendChild(input);
   return tdCheckbox;

@@ -11,6 +11,11 @@
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  },
   "keywords": [],
   "author": "carlesra",
   "license": "MIT",
@@ -39,7 +44,10 @@
   "dependencies": {
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.4",
+    "browserify-fs": "^1.0.0",
     "electron-squirrel-startup": "^1.0.0",
+    "fs": "^0.0.1-security",
+    "node-polyfill-webpack-plugin": "^2.0.1",
     "rxjs": "^7.8.0"
   }
 }

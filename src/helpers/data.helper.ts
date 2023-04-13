@@ -2,18 +2,17 @@ import {initTable, getTableData, getDestinationPath, setDestinationPathInput} fr
 import {showNoRowsMessage} from './alerts.helper';
 import {executeCommand} from "./terminal.helper";
 import {ApplicationData} from "../models/application-data.model";
-import {spinnerHandler} from "../services/app-message.service";
 import {TableRow} from "../models/table-row.model";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const nodeFunctions = window['nodeFunctions'];
+const nodeFunctions = window['nodeFunctions'];;
 let initialData: ApplicationData;
 
+console.log(nodeFunctions);
+
 window.onload = () => {
-  initEvents();
-  setInitialData();
-  getInitialData().then(data => initialData = data);
+
 }
 
 const initEvents = (): void =>  {
@@ -27,24 +26,30 @@ const initEvents = (): void =>  {
 }
 
 export const setInitialData = (): void =>  {
+  console.log(nodeFunctions)
   getInitialData().then((data: ApplicationData) => {
     if (!data) { return; }
+    initialData = data;
     initTable(data.tableRows);
     setDestinationPathInput((data.destinationPath));
   });
 }
 
 export const getInitialData = (): Promise<ApplicationData> => {
+  const configFilePath = nodeFunctions.path.join(nodeFunctions.baseDir, 'config.json');
   return new Promise((resolve) => {
-    nodeFunctions.readFile('config.json', 'utf8', (err: any, data: any) => {
-      const applicationData: ApplicationData = JSON.parse(data);
-      resolve (applicationData);
+    nodeFunctions.readFile(configFilePath, 'utf8', (err: any, data: any) => {
+      if (data) {
+        const applicationData: ApplicationData = JSON.parse(data);
+        resolve(applicationData);
+        return;
+      }
+      resolve(null);
     });
   })
 }
 
 const saveData = (): void =>  {
-  spinnerHandler.next();
   const tableData = getTableData().filter(row => row.warPath !== '' && row.mvnPath !== '' && row.active);
   if (tableData.length === 0) {
     showNoRowsMessage();
@@ -52,9 +57,11 @@ const saveData = (): void =>  {
   }
   const destinationPath = getDestinationPath();
   const applicationData =  new ApplicationData(destinationPath, tableData);
+  const configFilePath = nodeFunctions.path.join(nodeFunctions.baseDir, 'config.json');
   nodeFunctions.writeFileSync(
-    'config.json', JSON.stringify(applicationData), () => alert('Error saving data, please try again')
+    configFilePath, JSON.stringify(applicationData), () => alert('Error saving data, please try again')
   );
+  alert('Data has been saved correctly!');
   setBtnSaveClass('btn btn-success w-100')
 }
 
@@ -80,6 +87,7 @@ const copyToTomcat = (): void => {
 }
 
 export const applicationDataChanges = () => {
+  if (!initialData) { return; }
   const sameData = isApplicationDataModified();
 
   if (sameData) {
@@ -95,6 +103,7 @@ const isApplicationDataModified = (): boolean => {
   let sameData = true;
   if (tableData.length !== initialTableRows.length) {
     sameData = false;
+    return;
   }
   tableData.forEach((row, index) => {
     if (
@@ -116,3 +125,6 @@ const setBtnSaveClass = (cssClasses: string) => {
   const btnSaveApplicationData = document.querySelector('#saveBtn');
   btnSaveApplicationData.className = cssClasses;
 }
+
+initEvents();
+setInitialData();
