@@ -5,7 +5,8 @@ export class ApplicationData {
   destinationPath: string;
   tableRows: TableRow[];
 
-  constructor(destinationPath: string, tableRows: TableRow[]) {
+  constructor(releaseVersion: string, destinationPath: string, tableRows: TableRow[]) {
+    this.releaseVersion = releaseVersion;
     this.destinationPath = destinationPath;
     this.tableRows = tableRows;
   }

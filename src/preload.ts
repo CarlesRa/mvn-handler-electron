@@ -3,7 +3,8 @@
 import fs from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
-import {contextBridge, ipcRenderer} from "electron";
+import {contextBridge, ipcRenderer, dialog} from "electron";
+
 console.log('preload');
 
 ipcRenderer.invoke('get-user-data').then(data => {
@@ -14,5 +15,6 @@ ipcRenderer.invoke('get-user-data').then(data => {
         exec: exec,
         path: path,
         baseDir: data,
+        dialogElectron: dialog,
     });
 });

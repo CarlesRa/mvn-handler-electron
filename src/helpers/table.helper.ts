@@ -1,24 +1,42 @@
 import {TableRow} from "../models/table-row.model";
 import {spinnerHandler} from "../services/app-message.service";
 import {applicationDataChanges} from "./data.helper";
+import {ApplicationData} from "../models/application-data.model";
 
 window.onload = () => {
   initSubscriptions();
 }
 
 function initSubscriptions(): void {
-  // listeners
-  document.querySelector('#add').addEventListener('click', () => addRow(null, 'rows', true));
+  document.querySelector('#add').addEventListener('click', () => {
+    addRow(null, 'rows', true);
+    applicationDataChanges();
+  });
   document.querySelector('#headerCheckbox').addEventListener('change', () => checkboxHeaderHandler());
   document.querySelector('#destinationPath').addEventListener('change', () =>
     applicationDataChanges());
-
   spinnerHandler.subscribe(() => { // TODO: test rxjs
     alert('rxjs is fine!!!');
   });
 }
 
+export const setReleaseVersions = (applicationData: ApplicationData[]) => {
+  const releaseSelect: HTMLSelectElement = document.querySelector('#releaseSelect');
+  removeChildElements(releaseSelect);
+  applicationData.forEach((data, index) => {
+    const option: HTMLOptionElement = document.createElement('option');
+    option.value = data.releaseVersion;
+    option.textContent = data.releaseVersion;
+    if (index === applicationData.length - 1) {
+      option.defaultSelected = true;
+    }
+    releaseSelect.appendChild(option);
+  });
+}
+
 export const initTable = (rows: TableRow[]) => {
+  const tBody = document.querySelector('tbody');
+  tBody.innerHTML = '';
   rows.forEach(row => addRow(row, 'rows', row.active))
   if (rows.every(row => row.active)) {
     const checkboxHeader: HTMLInputElement = document.querySelector('#headerCheckbox');
@@ -40,7 +58,7 @@ const addRow = (tableRow?: TableRow, idTBody = 'rows', isCheckBoxActive = true):
     return;
   }
   const tBody = document.querySelector(`#${idTBody}`);
-  const trElement = getTr();
+  const trElement = document.createElement('tr');
   const checkbox = getCheckbox();
   const mvnPathInput = getPathInput('MVN Path');
   const warPathInput = getPathInput('WAR Path');
@@ -55,10 +73,6 @@ const addRow = (tableRow?: TableRow, idTBody = 'rows', isCheckBoxActive = true):
   trElement.appendChild(tdAction);
   trElement.className = 'row-element';
   tBody.appendChild(trElement);
-}
-
-const getTr = (): HTMLTableRowElement => {
-  return document.createElement('tr');
 }
 
 const getCheckbox = (): HTMLTableCellElement => {
@@ -82,6 +96,7 @@ const checkboxHandler = (checkbox: HTMLInputElement) => {
   }
   const allCheckboxes: NodeListOf<HTMLInputElement> = document.querySelectorAll('input[type="checkbox"]')
   const checkBoxArray = Array.from(allCheckboxes);
+  checkBoxArray.shift();
   if (checkBoxArray.filter(checkbox => checkbox.checked).length === getTableData().length) {
     headerCheckbox.checked = true;
     return;
@@ -137,7 +152,8 @@ export const getTableData = (): TableRow[] => {
   return tableData;
 }
 
-export const getDestinationPath = (): string => {
-  const destinationPath: HTMLInputElement = document.querySelector('#destinationPath');
-  return destinationPath.value;
+const removeChildElements = (element: HTMLElement) => {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
 }
