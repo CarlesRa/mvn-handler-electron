@@ -1,5 +1,5 @@
 # War Handler
-Mvn-Handler is a tool to generate and copy your war files into tomcat.
+War-Handler is a tool to generate and copy your war files into tomcat.
 
 [![npm version](https://img.shields.io/npm/v/git-manager-cli.svg)](https://www.npmjs.com/package/git-manager-cli)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
