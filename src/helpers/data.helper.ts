@@ -1,5 +1,12 @@
 import {initTable, getTableData, setDestinationPathInput, setReleaseVersions} from './table.helper';
-import {showDataCantSaved, showDataSavedCorrectly, showReleaseEmpty, showReleaseRemoved} from './alerts.helper';
+import {
+  errorCreatingWar, errorSavingData,
+  showDataCantSaved,
+  showDataSavedCorrectly,
+  showNoTableRows,
+  showReleaseEmpty,
+  showReleaseRemoved
+} from './alerts.helper';
 import {executeCommand} from "./terminal.helper";
 import {ApplicationData} from "../models/application-data.model";
 import {TableRow} from "../models/table-row.model";
@@ -109,9 +116,7 @@ const deleteRelease = () => {
 
 const persistChanges = (applicationData: ApplicationData[]): void => {
   const configFilePath = nodeFunctions.path.join(nodeFunctions.baseDir, 'config.json');
-  nodeFunctions.writeFileSync(
-    configFilePath, JSON.stringify(applicationData), () => alert('Error saving data, please try again')
-  );
+  nodeFunctions.writeFileSync(configFilePath, JSON.stringify(applicationData), () => errorSavingData());
 }
 
 const getDestinationPath = (): HTMLInputElement => {
@@ -124,32 +129,36 @@ export const getReleaseVersion = (): HTMLSelectElement => {
   return releaseSelect;
 }
 
-const generateWars = (): void =>  {
-  const tableData = getTableData().filter(row => row.warPath !== '' && row.mvnPath !== '' && row.active);
+const generateWars = async (): Promise<void> =>  {
+  const tableData = getTableData().filter(row => row.warPath !== '' && row.pomPath !== '' && row.active);
   if (tableData.length === 0) {
-    showDataCantSaved();
+    showNoTableRows();
     return;
   }
-  executeCommand('ls > /home/carlesra/Documents/test.txt') // TODO: add correct command
-    .then(() => alert('ok'))
-    .catch((error) => console.log(error));
+  for(const row of tableData) {
+    let errorOnGenerateWar = false;
+    await executeCommand(`cmd mvn -f ${row.pomPath}`)
+      .catch((error) => {
+        errorCreatingWar(error);
+        errorOnGenerateWar = true;
+      });
+    if (errorOnGenerateWar) { return; }
+  }
 }
 
 const copyToTomcat = (): void => {
   const destinationPath: HTMLInputElement = document.querySelector('#destinationPath');
-  const tableData = getTableData().filter(row => row.warPath !== '' && row.mvnPath !== '' && row.active);
+  const tableData = getTableData().filter(row => row.warPath !== '' && row.pomPath !== '' && row.active);
 
   if (!destinationPath.value) {
     alert('No destination Path saved');
     return;
   }
   if (tableData.length === 0) {
-    showDataCantSaved();
+    showNoTableRows();
     return;
   }
-  executeCommand('cp ./config.json /home/carlesra/Documents/') // TODO: add correct command
-    .then(() => alert('ok'))
-    .catch((error) => console.log(error));
+
 }
 
 export const applicationDataChanges = () => {
@@ -174,7 +183,7 @@ const isApplicationDataModified = (): boolean => {
   tableData.forEach((row, index) => {
     if (
       row.active !== selectedTableRows[index].active ||
-      row.mvnPath !== selectedTableRows[index].mvnPath ||
+      row.pomPath !== selectedTableRows[index].pomPath ||
       row.warPath !== selectedTableRows[index].warPath) {
       sameData = false;
       return;

@@ -2,6 +2,7 @@ import {TableRow} from "../models/table-row.model";
 import {spinnerHandler} from "../services/app-message.service";
 import {applicationDataChanges} from "./data.helper";
 import {ApplicationData} from "../models/application-data.model";
+import {errorCantAddRow} from "./alerts.helper";
 
 window.onload = () => {
   initSubscriptions();
@@ -53,8 +54,8 @@ export const setDestinationPathInput = (destinationFolder: string) => {
 const addRow = (tableRow?: TableRow, idTBody = 'rows', isCheckBoxActive = true): void => {
   const tableData = getTableData();
   const lastRow = tableData[tableData.length - 1];
-  if (lastRow && (lastRow.mvnPath === '' || lastRow.warPath === '')) {
-    alert('The row cannot be added, fill in the previous one first');
+  if (lastRow && (lastRow.pomPath === '' || lastRow.warPath === '')) {
+    errorCantAddRow();
     return;
   }
   const tBody = document.querySelector(`#${idTBody}`);
@@ -65,7 +66,7 @@ const addRow = (tableRow?: TableRow, idTBody = 'rows', isCheckBoxActive = true):
   const tdAction = getTdAction();
   trElement.addEventListener('click', () => applicationDataChanges());
   checkbox.querySelector('input').checked = isCheckBoxActive;
-  mvnPathInput.querySelector('input').value = tableRow?.mvnPath ?? '';
+  mvnPathInput.querySelector('input').value = tableRow?.pomPath ?? '';
   warPathInput.querySelector('input').value = tableRow?.warPath ?? '';
   trElement.appendChild(checkbox);
   trElement.appendChild(mvnPathInput);
@@ -145,7 +146,7 @@ export const getTableData = (): TableRow[] => {
     const columns = row.querySelectorAll('td');
     const rowData = new TableRow();
     rowData.active =  columns[0].querySelector('input').checked || false;
-    rowData.mvnPath = columns[1].querySelector('input').value || '';
+    rowData.pomPath = columns[1].querySelector('input').value || '';
     rowData.warPath = columns[2].querySelector('input').value || '';
     tableData.push(rowData);
   });

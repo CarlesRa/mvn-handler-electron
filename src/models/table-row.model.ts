@@ -1,5 +1,5 @@
 export class TableRow {
   active: boolean;
-  mvnPath: string;
+  pomPath: string;
   warPath: string;
 }
