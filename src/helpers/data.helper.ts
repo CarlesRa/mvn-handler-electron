@@ -26,6 +26,7 @@ const initEvents = (): void =>  {
 export const setInitialData = (): void =>  {
   getInitialData().then((data: ApplicationData[]) => {
     initialData = data ?? [];
+    console.log('initial data', initialData);
     if (!initialData || initialData.length === 0) { return; }
     setReleaseVersions(data);
     initTable(data[data.length - 1].tableRows);
