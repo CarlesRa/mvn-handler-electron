@@ -14,11 +14,22 @@ function initSubscriptions(): void {
     applicationDataChanges();
   });
   document.querySelector('#headerCheckbox').addEventListener('change', () => checkboxHeaderHandler());
-  document.querySelector('#destinationPath').addEventListener('change', () =>
+  document.querySelector('#destinationPath').addEventListener('keyup', () =>
     applicationDataChanges());
   spinnerHandler.subscribe(() => { // TODO: test rxjs
     alert('rxjs is fine!!!');
   });
+}
+
+export const initTable = (rows: TableRow[]) => {
+  const tBody = document.querySelector('tbody');
+  tBody.innerHTML = '';
+  rows.forEach(row => addRow(row, 'rows', row.active))
+  if (rows.every(row => row.active)) {
+    const checkboxHeader: HTMLInputElement = document.querySelector('#headerCheckbox');
+    checkboxHeader.checked = true;
+  }
+  checkboxHandler(null);
 }
 
 export const setReleaseVersions = (applicationData: ApplicationData[]) => {
@@ -33,17 +44,6 @@ export const setReleaseVersions = (applicationData: ApplicationData[]) => {
     }
     releaseSelect.appendChild(option);
   });
-}
-
-export const initTable = (rows: TableRow[]) => {
-  const tBody = document.querySelector('tbody');
-  tBody.innerHTML = '';
-  rows.forEach(row => addRow(row, 'rows', row.active))
-  if (rows.every(row => row.active)) {
-    const checkboxHeader: HTMLInputElement = document.querySelector('#headerCheckbox');
-    checkboxHeader.checked = true;
-  }
-  checkboxHandler(null);
 }
 
 export const setDestinationPathInput = (destinationFolder: string) => {
@@ -63,14 +63,17 @@ const addRow = (tableRow?: TableRow, idTBody = 'rows', isCheckBoxActive = true):
   const checkbox = getCheckbox();
   const mvnPathInput = getPathInput('MVN Path');
   const warPathInput = getPathInput('WAR Path');
+  const newWarName = getPathInput('Change war name');
   const tdAction = getTdAction();
   trElement.addEventListener('click', () => applicationDataChanges());
   checkbox.querySelector('input').checked = isCheckBoxActive;
   mvnPathInput.querySelector('input').value = tableRow?.pomPath ?? '';
   warPathInput.querySelector('input').value = tableRow?.warPath ?? '';
+  newWarName.querySelector('input').value = tableRow?.newWarName ?? '';
   trElement.appendChild(checkbox);
   trElement.appendChild(mvnPathInput);
   trElement.appendChild(warPathInput);
+  trElement.appendChild(newWarName);
   trElement.appendChild(tdAction);
   trElement.className = 'row-element';
   tBody.appendChild(trElement);
@@ -148,6 +151,7 @@ export const getTableData = (): TableRow[] => {
     rowData.active =  columns[0].querySelector('input').checked || false;
     rowData.pomPath = columns[1].querySelector('input').value || '';
     rowData.warPath = columns[2].querySelector('input').value || '';
+    rowData.newWarName = columns[3].querySelector('input').value || '';
     tableData.push(rowData);
   });
   return tableData;

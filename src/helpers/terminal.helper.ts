@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const nodeFunctions = window['nodeFunctions'];
+const mainProcess = window['mainProcess'];
 
 export const executeCommand = (command: string) => {
   return new Promise((resolve, reject) => {
-    nodeFunctions.exec(command, (error: (undefined | null), stdout: string, stderr: string) => {
+    mainProcess.exec(`start cmd /c ${command}`, (error: (undefined | null), stdout: string, stderr: string) => {
       if (error) {
         reject(error);
         return;

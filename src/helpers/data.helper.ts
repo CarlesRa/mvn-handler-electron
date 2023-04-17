@@ -1,7 +1,8 @@
 import {initTable, getTableData, setDestinationPathInput, setReleaseVersions} from './table.helper';
 import {
   errorCopyingWar,
-  errorCreatingWar, errorSavingData,
+  showErrorCreatingWar, errorSavingData,
+  noDestinationPath,
   showDataCantSaved,
   showDataSavedCorrectly,
   showNoTableRows,
@@ -14,16 +15,16 @@ import {TableRow} from "../models/table-row.model";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const nodeFunctions = window['nodeFunctions'];
+const mainProcess = window['mainProcess'];
 let initialData: ApplicationData[];
 
 const initEvents = (): void =>  {
   document.querySelector('#saveBtn').addEventListener('click', () => { saveRelease(); });
   document.querySelector('#generateWars').addEventListener('click', () => {
-    generateWars()
+    generateWars().then();
   });
   document.querySelector('#copyToTomcat').addEventListener('click', () => {
-    copyToTomcat();
+    copyToTomcat().then();
   });
   document.querySelector('#newReleaseBtn').addEventListener('click', () => openReleaseModal())
   document.querySelector('#saveReleaseVersion').addEventListener('click', () => newRelease());
@@ -34,7 +35,6 @@ const initEvents = (): void =>  {
 export const setInitialData = (): void =>  {
   getInitialData().then((data: ApplicationData[]) => {
     initialData = data ?? [];
-    console.log('initial data', initialData);
     if (!initialData || initialData.length === 0) { return; }
     setReleaseVersions(data);
     initTable(data[data.length - 1].tableRows);
@@ -43,15 +43,15 @@ export const setInitialData = (): void =>  {
 }
 
 export const getInitialData = (): Promise<ApplicationData[]> => {
-  const configFilePath = nodeFunctions.path.join(nodeFunctions.baseDir, 'config.json');
+  const configFilePath = mainProcess.path.join(mainProcess.baseDir, 'config.json');
   return new Promise((resolve) => {
-    nodeFunctions.readFile(configFilePath, 'utf8', (err: any, data: any) => {
+    mainProcess.readFile(configFilePath, 'utf8', (err: any, data: any) => {
       if (data) {
         const applicationData: ApplicationData[] = JSON.parse(data);
         resolve(applicationData);
         return;
       }
-      resolve(null);
+      resolve([]);
     });
   });
 }
@@ -116,8 +116,8 @@ const deleteRelease = () => {
 }
 
 const persistChanges = (applicationData: ApplicationData[]): void => {
-  const configFilePath = nodeFunctions.path.join(nodeFunctions.baseDir, 'config.json');
-  nodeFunctions.writeFileSync(configFilePath, JSON.stringify(applicationData), () => errorSavingData());
+  const configFilePath = mainProcess.path.join(mainProcess.baseDir, 'config.json');
+  mainProcess.writeFileSync(configFilePath, JSON.stringify(applicationData), () => errorSavingData());
 }
 
 const getDestinationPath = (): HTMLInputElement => {
@@ -138,9 +138,9 @@ const generateWars = async (): Promise<void> =>  {
   }
   for(const row of tableData) {
     let errorOnGenerateWar = false;
-    await executeCommand(`mvn -f ${row.pomPath}`)
+    await executeCommand(`mvn -f ${row.pomPath} clean package`)
       .catch((error) => {
-        errorCreatingWar(error);
+        showErrorCreatingWar(error);
         errorOnGenerateWar = true;
       });
     if (errorOnGenerateWar) { return; }
@@ -151,7 +151,7 @@ const copyToTomcat = async (): Promise<void> => {
   const destinationPath: HTMLInputElement = document.querySelector('#destinationPath');
   const tableData = getTableData().filter(row => row.warPath !== '' && row.pomPath !== '' && row.active);
   if (!destinationPath.value) {
-    alert('No destination Path saved');
+    noDestinationPath();
     return;
   }
   if (tableData.length === 0) {
@@ -160,7 +160,7 @@ const copyToTomcat = async (): Promise<void> => {
   }
   for(const row of tableData) {
     let errorOnGenerateWar = false;
-    await executeCommand(`xcopy ${row.warPath} ${destinationPath.value}`)
+    await executeCommand(`xcopy /Y /I ${row.warPath} ${destinationPath.value}${row.newWarName ?? ''}`)
       .catch((error) => {
         errorCopyingWar(error);
         errorOnGenerateWar = true;
@@ -192,7 +192,8 @@ const isApplicationDataModified = (): boolean => {
     if (
       row.active !== selectedTableRows[index].active ||
       row.pomPath !== selectedTableRows[index].pomPath ||
-      row.warPath !== selectedTableRows[index].warPath) {
+      row.warPath !== selectedTableRows[index].warPath ||
+      row.newWarName !== selectedTableRows[index].newWarName) {
       sameData = false;
       return;
     }

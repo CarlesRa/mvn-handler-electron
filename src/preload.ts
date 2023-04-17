@@ -8,7 +8,7 @@ import {contextBridge, ipcRenderer, dialog} from "electron";
 console.log('preload');
 
 ipcRenderer.invoke('get-user-data').then(data => {
-    contextBridge.exposeInMainWorld('nodeFunctions', {
+    contextBridge.exposeInMainWorld('mainProcess', {
         readFileSync: fs.readFileSync,
         readFile: fs.readFile,
         writeFileSync: fs.writeFileSync,

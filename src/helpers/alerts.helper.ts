@@ -1,7 +1,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const nodeFunctions = window['nodeFunctions'];
+const mainProcess = window['mainProcess'];
 
 export const showDataCantSaved = () => {
   showMessage('Data not saved, complete all form fields');
@@ -23,7 +23,7 @@ export const showNoTableRows = () => {
   showMessage('Error, No rows in table');
 }
 
-export const errorCreatingWar = (message: string) => {
+export const showErrorCreatingWar = (message: string) => {
   showMessage(`Error creating WARs: ${message}`);
 }
 
@@ -39,6 +39,10 @@ export const errorSavingData = () => {
   showMessage('Error saving data, please try again');
 }
 
+export const noDestinationPath = () => {
+  showMessage('No destination Path saved');
+}
+
 const showMessage = (message: string): void => {
-  nodeFunctions.renderer.invoke('showDialog', message);
+  mainProcess.renderer.invoke('showDialog', message);
 }
