@@ -1,5 +1,6 @@
 import {initTable, getTableData, setDestinationPathInput, setReleaseVersions} from './table.helper';
 import {
+  errorCopyingWar,
   errorCreatingWar, errorSavingData,
   showDataCantSaved,
   showDataSavedCorrectly,
@@ -161,7 +162,7 @@ const copyToTomcat = async (): Promise<void> => {
     let errorOnGenerateWar = false;
     await executeCommand(`xcopy ${row.warPath} ${destinationPath.value}`)
       .catch((error) => {
-        errorCreatingWar(error);
+        errorCopyingWar(error);
         errorOnGenerateWar = true;
       });
     if (errorOnGenerateWar) { return; }

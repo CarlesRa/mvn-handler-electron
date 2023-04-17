@@ -24,7 +24,11 @@ export const showNoTableRows = () => {
 }
 
 export const errorCreatingWar = (message: string) => {
-  showMessage(`Error creating WARs in ${message}`);
+  showMessage(`Error creating WARs: ${message}`);
+}
+
+export const errorCopyingWar = (message: string) => {
+  showMessage(`Error copying WARs: ${message}`);
 }
 
 export const errorCantAddRow = () => {
