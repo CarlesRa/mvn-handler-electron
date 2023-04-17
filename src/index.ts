@@ -30,7 +30,9 @@ const createWindow = (): void => {
   mainWindow.webContents.openDevTools();
 
   ipcMain.handle("showDialog", (e, message) => {
-    dialog.showMessageBox(mainWindow, { message }).then();
+    dialog.showMessageBox(mainWindow, {
+      message
+    }).then();
   });
 };
 

@@ -146,10 +146,9 @@ const generateWars = async (): Promise<void> =>  {
   }
 }
 
-const copyToTomcat = (): void => {
+const copyToTomcat = async (): Promise<void> => {
   const destinationPath: HTMLInputElement = document.querySelector('#destinationPath');
   const tableData = getTableData().filter(row => row.warPath !== '' && row.pomPath !== '' && row.active);
-
   if (!destinationPath.value) {
     alert('No destination Path saved');
     return;
@@ -158,7 +157,15 @@ const copyToTomcat = (): void => {
     showNoTableRows();
     return;
   }
-
+  for(const row of tableData) {
+    let errorOnGenerateWar = false;
+    await executeCommand(`xcopy ${row.warPath} ${destinationPath.value}`)
+      .catch((error) => {
+        errorCreatingWar(error);
+        errorOnGenerateWar = true;
+      });
+    if (errorOnGenerateWar) { return; }
+  }
 }
 
 export const applicationDataChanges = () => {
