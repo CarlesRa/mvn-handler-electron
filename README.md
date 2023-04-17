@@ -1,9 +1,8 @@
 # War Handler
 War-Handler is a tool to generate and copy your war files into tomcat.
 
-[![npm version](https://img.shields.io/npm/v/git-manager-cli.svg)](https://www.npmjs.com/package/war-handler)
+[![npm version](https://img.shields.io/npm/v/war-handler.svg)](https://www.npmjs.com/package/war-handler)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
-![minimum Node.js version](https://img.shields.io/node/v/war-handler.svg)
 
 ## Installing
 
