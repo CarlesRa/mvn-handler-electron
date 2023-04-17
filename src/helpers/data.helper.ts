@@ -68,12 +68,10 @@ const newRelease = () => {
 
 const releaseVersionChange = () => {
   const releaseSelect: HTMLSelectElement = document.querySelector('#releaseSelect');
-  const dataSelected = initialData.find(data => data.releaseVersion === releaseSelect.value);
-  getDestinationPath().value = dataSelected.destinationPath;
-  if (dataSelected) {
-    const appData =
-      new ApplicationData(dataSelected.releaseVersion, dataSelected.destinationPath, dataSelected.tableRows);
-    initTable(appData.tableRows);
+  const releaseSelectedData = initialData.find(data => data.releaseVersion === releaseSelect.value);
+  if (releaseSelectedData) {
+    getDestinationPath().value = releaseSelectedData.destinationPath;
+    initTable(releaseSelectedData.tableRows);
   }
 }
 
@@ -90,10 +88,7 @@ const saveRelease = (): void =>  {
   if (index === -1) { return; }
   initialData[index].tableRows = tableData;
   initialData[index].destinationPath = destinationPath.value;
-  const configFilePath = nodeFunctions.path.join(nodeFunctions.baseDir, 'config.json');
-  nodeFunctions.writeFileSync(
-    configFilePath, JSON.stringify(initialData), () => alert('Error saving data, please try again')
-  );
+  persistChanges(initialData);
   setBtnSaveClass('btn btn-success w-100');
   showDataSavedCorrectly();
 }
@@ -103,15 +98,19 @@ const deleteRelease = () => {
   if (index === -1) { return; }
   initialData.splice(index, 1);
   getReleaseVersion().value = '';
-  const configFilePath = nodeFunctions.path.join(nodeFunctions.baseDir, 'config.json');
-  nodeFunctions.writeFileSync(
-    configFilePath, JSON.stringify(initialData), () => alert('Error saving data, please try again')
-  );
   getDestinationPath().value = '';
+  persistChanges(initialData);
   const tBody = document.querySelector('tbody');
   tBody.innerHTML = '';
   showReleaseRemoved();
   setInitialData();
+}
+
+const persistChanges = (applicationData: ApplicationData[]): void => {
+  const configFilePath = nodeFunctions.path.join(nodeFunctions.baseDir, 'config.json');
+  nodeFunctions.writeFileSync(
+    configFilePath, JSON.stringify(applicationData), () => alert('Error saving data, please try again')
+  );
 }
 
 const getDestinationPath = (): HTMLInputElement => {

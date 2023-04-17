@@ -16,5 +16,6 @@ ipcRenderer.invoke('get-user-data').then(data => {
         path: path,
         baseDir: data,
         dialogElectron: dialog,
+        renderer: ipcRenderer,
     });
 });

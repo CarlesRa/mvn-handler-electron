@@ -5,17 +5,11 @@ S
 #src/services/app-message.service.ts,6/7/67b82438d96e692d255d9aa27817ea5b717bb5ae
 A
 package-lock.json,f/a/fa288d1472d29beccb489a676f68739ad365fc47
-M
-src/models/table-row.model.ts,1/6/16754f48e0c3ea1e5f9c1efe40aeba2c76d8fa57
 :
 
 .gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
 ?
-src/renderer.ts,a/2/a2d0867c9ac4c8ccc666a2663d87fda5068554b9
-?
 forge.config.ts,5/3/5323f292bfd274f45e5f8b462070c3ecbdbf6bfd
-F
-webpack.main.config.ts,5/2/525fa61b5e564a8188632c367e6b3f5275ef7304
 B
 webpack.plugins.ts,9/7/9790e7f6a3fd0053725a512244b77436b71deba4
 J
