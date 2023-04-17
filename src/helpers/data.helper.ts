@@ -137,7 +137,7 @@ const generateWars = async (): Promise<void> =>  {
   }
   for(const row of tableData) {
     let errorOnGenerateWar = false;
-    await executeCommand(`cmd mvn -f ${row.pomPath}`)
+    await executeCommand(`mvn -f ${row.pomPath}`)
       .catch((error) => {
         errorCreatingWar(error);
         errorOnGenerateWar = true;
