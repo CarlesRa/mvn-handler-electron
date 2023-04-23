@@ -77,7 +77,8 @@ const newRelease = () => {
 
 const releaseVersionChange = () => {
   const releaseSelect: HTMLSelectElement = document.querySelector('#releaseSelect');
-  const releaseSelectedData = initialData.find(data => data.releaseVersion === releaseSelect.value);
+  const releaseSelectedData = initialData.find(data =>
+      data.releaseVersion === releaseSelect.value);
   if (releaseSelectedData) {
     getDestinationPath().value = releaseSelectedData.destinationPath;
     initTable(releaseSelectedData.tableRows);
@@ -131,7 +132,8 @@ export const getReleaseVersion = (): HTMLSelectElement => {
 }
 
 const generateWars = async (): Promise<void> =>  {
-  const tableData = getTableData().filter(row => row.warPath !== '' && row.pomPath !== '' && row.active);
+  const tableData = getTableData().filter(row =>
+      row.warPath !== '' && row.pomPath !== '' && row.active);
   if (tableData.length === 0) {
     showNoTableRows();
     return;
@@ -148,19 +150,21 @@ const generateWars = async (): Promise<void> =>  {
 }
 
 const copyToTomcat = async (): Promise<void> => {
-  const destinationPath: HTMLInputElement = document.querySelector('#destinationPath');
-  const tableData = getTableData().filter(row => row.warPath !== '' && row.pomPath !== '' && row.active);
-  if (!destinationPath.value) {
-    noDestinationPath();
-    return;
-  }
+  const tableData = getTableData().filter(row =>
+      row.warPath !== '' && row.pomPath !== '' && row.active);
   if (tableData.length === 0) {
     showNoTableRows();
     return;
   }
+  const destinationPath: HTMLInputElement = document.querySelector('#destinationPath');
+  if (!destinationPath.value) {
+    noDestinationPath();
+    return;
+  }
   for(const row of tableData) {
     let errorOnGenerateWar = false;
-    await executeCommand(`xcopy /Y /I ${row.warPath} ${destinationPath.value}${row.newWarName ?? ''}`)
+    const warPath = mainProcess.path.join(destinationPath.value, row.newWarName);
+    await executeCommand(`xcopy /Y /I ${row.warPath} ${warPath}`)
       .catch((error) => {
         errorCopyingWar(error);
         errorOnGenerateWar = true;
@@ -181,7 +185,8 @@ export const applicationDataChanges = () => {
 
 const isApplicationDataModified = (): boolean => {
   const tableData: TableRow[] = getTableData();
-  const selectedVersion = initialData.find(data => data.releaseVersion === getReleaseVersion().value);
+  const selectedVersion = initialData.find(data =>
+      data.releaseVersion === getReleaseVersion().value);
   const selectedTableRows: TableRow[] = selectedVersion.tableRows;
   let sameData = true;
   if (tableData.length !== selectedTableRows.length) {

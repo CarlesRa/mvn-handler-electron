@@ -30,6 +30,6 @@ import './index.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
 import './helpers/table.helper.ts';
-// import './helpers/data.helper';
+import './helpers/data.helper';
 
 console.log('👋 This message is being logged by "renderer.js", included via webpack');
