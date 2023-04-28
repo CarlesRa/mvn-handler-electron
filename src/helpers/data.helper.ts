@@ -86,15 +86,15 @@ const releaseVersionChange = () => {
 }
 
 const saveRelease = (): void =>  {
-  const tableData = getTableData();
-  const releaseVersion = getReleaseVersion();
-  const destinationPath = getDestinationPath();
+  const tableData: TableRow[] = getTableData();
+  const releaseVersion: HTMLSelectElement = getReleaseVersion();
+  const destinationPath: HTMLInputElement = getDestinationPath();
   if (tableData.length === 0 || !releaseVersion || releaseVersion.value === ''
     || !destinationPath.value || destinationPath.value === '') {
     showDataCantSaved();
     return;
   }
-  const index = initialData.findIndex(data => data.releaseVersion === getReleaseVersion().value);
+  const index: number = initialData.findIndex(data => data.releaseVersion === getReleaseVersion().value);
   if (index === -1) { return; }
   initialData[index].tableRows = tableData;
   initialData[index].destinationPath = destinationPath.value;
@@ -132,7 +132,7 @@ export const getReleaseVersion = (): HTMLSelectElement => {
 }
 
 const generateWars = async (): Promise<void> =>  {
-  const tableData = getTableData().filter(row =>
+  const tableData: TableRow[] = getTableData().filter((row: TableRow) =>
       row.warPath !== '' && row.pomPath !== '' && row.active);
   if (tableData.length === 0) {
     showNoTableRows();
@@ -140,7 +140,7 @@ const generateWars = async (): Promise<void> =>  {
   }
   for(const row of tableData) {
     let errorOnGenerateWar = false;
-    await executeCommand(`mvn -f ${row.pomPath} clean package`)
+    await executeCommand('/k', `mvn -f ${row.pomPath} clean package install`)
       .catch((error) => {
         showErrorCreatingWar(error);
         errorOnGenerateWar = true;
@@ -150,7 +150,7 @@ const generateWars = async (): Promise<void> =>  {
 }
 
 const copyToTomcat = async (): Promise<void> => {
-  const tableData = getTableData().filter(row =>
+  const tableData: TableRow[] = getTableData().filter(row =>
       row.warPath !== '' && row.pomPath !== '' && row.active);
   if (tableData.length === 0) {
     showNoTableRows();
@@ -164,7 +164,7 @@ const copyToTomcat = async (): Promise<void> => {
   for(const row of tableData) {
     let errorOnGenerateWar = false;
     const warPath = mainProcess.path.join(destinationPath.value, row.newWarName);
-    await executeCommand(`xcopy /Y /I ${row.warPath} ${warPath}`)
+    await executeCommand('/c',`xcopy /Y /I ${row.warPath} ${warPath}`)
       .catch((error) => {
         errorCopyingWar(error);
         errorOnGenerateWar = true;

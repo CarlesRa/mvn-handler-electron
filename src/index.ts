@@ -16,6 +16,7 @@ const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
     height: 600,
     width: 800,
+    icon: './coffee.ico',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,

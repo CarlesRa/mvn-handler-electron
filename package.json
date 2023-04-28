@@ -17,7 +17,7 @@
     "path": false
   },
   "keywords": [],
-  "author": "carlesra",
+  "author": "Juan Carlos Ramos Moll",
   "license": "MIT",
   "devDependencies": {
     "@electron-forge/cli": "^6.1.1",

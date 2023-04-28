@@ -2,9 +2,10 @@
 // @ts-ignore
 const mainProcess = window['mainProcess'];
 
-export const executeCommand = (command: string) => {
+export const executeCommand = (cmdOption: string, command: string) => {
   return new Promise((resolve, reject) => {
-    mainProcess.exec(`start cmd /c ${command}`, (error: (undefined | null), stdout: string, stderr: string) => {
+    mainProcess.exec(`start cmd ${cmdOption}  ${command}`,
+        (error: (undefined | null), stdout: string, stderr: string) => {
       if (error) {
         reject(error);
         return;

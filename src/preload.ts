@@ -2,7 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import fs from 'fs';
 import path from 'path';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 import {contextBridge, ipcRenderer, dialog} from "electron";
 
 console.log('preload');
@@ -13,6 +13,7 @@ ipcRenderer.invoke('get-user-data').then(data => {
         readFile: fs.readFile,
         writeFileSync: fs.writeFileSync,
         exec: exec,
+        spawn: spawn,
         path: path,
         baseDir: data,
         dialogElectron: dialog,
