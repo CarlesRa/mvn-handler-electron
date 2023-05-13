@@ -4,6 +4,13 @@ import {applicationDataChanges} from "./data.helper";
 import {ApplicationData} from "../models/application-data.model";
 import {errorCantAddRow} from "./alerts.helper";
 
+/*enum AcceptedInput {
+  Folder,
+  War,
+}*/
+
+type AcceptedInput = '.xml' | '.war';
+
 window.onload = () => {
   initSubscriptions();
 }
@@ -61,18 +68,18 @@ const addRow = (tableRow?: TableRow, idTBody = 'rows', isCheckBoxActive = true):
   const tBody = document.querySelector(`#${idTBody}`);
   const trElement = document.createElement('tr');
   const checkbox = getCheckbox();
-  const mvnPathInput = getPathInput('MVN Path');
-  const warPathInput = getPathInput('WAR Path');
-  const newWarName = getPathInput('Change war name');
+  const pomFileInput = getTdInputWithIcon('POM Folder', '.xml');
+  const warFileInput = getTdInputWithIcon('WAR Path', '.war');
+  const newWarName = getTdInput('Change war name');
   const tdAction = getTdAction();
   trElement.addEventListener('click', () => applicationDataChanges());
   checkbox.querySelector('input').checked = isCheckBoxActive;
-  mvnPathInput.querySelector('input').value = tableRow?.pomPath ?? '';
-  warPathInput.querySelector('input').value = tableRow?.warPath ?? '';
+  pomFileInput.querySelector('input').value = tableRow?.pomPath ?? '';
+  warFileInput.querySelector('input').value = tableRow?.warPath ?? '';
   newWarName.querySelector('input').value = tableRow?.newWarName ?? '';
   trElement.appendChild(checkbox);
-  trElement.appendChild(mvnPathInput);
-  trElement.appendChild(warPathInput);
+  trElement.appendChild(pomFileInput);
+  trElement.appendChild(warFileInput);
   trElement.appendChild(newWarName);
   trElement.appendChild(tdAction);
   trElement.className = 'row-element';
@@ -83,6 +90,7 @@ const getCheckbox = (): HTMLTableCellElement => {
   const tdCheckbox = document.createElement('td');
   tdCheckbox.style.width = '5%';
   tdCheckbox.style.textAlign = 'center';
+  tdCheckbox.className = 'align-middle';
   const input = document.createElement('input');
   input.type = 'checkbox';
   input.className = 'form-check-input align-middle';
@@ -108,25 +116,53 @@ const checkboxHandler = (checkbox: HTMLInputElement) => {
   headerCheckbox.checked = false;
 }
 
-const getPathInput = (placeHolder: string, value?: string): HTMLTableCellElement => {
-  const tdPath = document.createElement('td');
+const getTdInputWithIcon = (placeHolder: string, acceptedInput: AcceptedInput): HTMLTableCellElement => {
+  const td = document.createElement('td');
+  const div = document.createElement('div');
+  const input = getInput(placeHolder);
+  const button = document.createElement('button');
+  const span = document.createElement('span');
+  const i = document.createElement('i');
+  td.className = 'align-middle';
+  div.className = 'input-group';
+  button.className = 'btn btn-primary btn-sm input-group-text';
+  button.title = 'Click to search';
+  span.className = 'bi bi-search';
+  div.appendChild(input);
+  button.appendChild(span);
+  div.appendChild(button);
+  td.appendChild(div);
+  button.addEventListener('click', () => inputFileHandler(input, acceptedInput))
+  return td;
+}
+
+const getTdInput = (placeHolder: string) => {
+  const td = document.createElement('td');
+  const input = getInput(placeHolder);
+  input.title = 'Insert a value if you want to change the name of the war';
+  td.className = 'align-middle';
+  td.appendChild(input);
+  return td;
+}
+
+const getInput = (placeHolder: string): HTMLInputElement => {
   const input = document.createElement('input');
   input.type = 'text';
   input.className = 'form-control align-middle';
   input.placeholder = placeHolder;
-  input.value = value ?? '';
-  tdPath.appendChild(input);
-  return tdPath;
+  return input;
 }
 
 const getTdAction = (): HTMLTableCellElement => {
-  const tdAction = document.createElement('td');
-  const tdI = document.createElement('i');
-  tdI.className = 'bi bi-trash text-right pointer align-middle';
-  tdI.addEventListener('click', () => removeRow(tdI));
-  tdAction.style.textAlign = 'right';
-  tdAction.appendChild(tdI);
-  return tdAction;
+  const td = document.createElement('td');
+  const i = document.createElement('i');
+  td.className = 'align-middle';
+  i.className = 'bi bi-trash text-right pointer align-middle';
+  i.title = 'Remove row';
+  i.addEventListener('click', () => removeRow(i));
+  td.style.textAlign = 'right';
+  td.appendChild(i);
+  return td;
 }
 
 const removeRow = (tdI: HTMLElement): void => {
@@ -140,6 +176,25 @@ const checkboxHeaderHandler = () => {
   const checkboxHeader: HTMLInputElement = document.querySelector('#headerCheckbox');
   const allCheckboxes: NodeListOf<HTMLInputElement> = document.querySelectorAll('input[type="checkbox"]')
   allCheckboxes.forEach(checkbox => checkbox.checked = checkboxHeader.checked);
+}
+
+const inputFileHandler = (inputElement: HTMLInputElement, accept: AcceptedInput) => {
+  const input = document.createElement('input');
+  let inputValue: string;
+  input.type = 'file';
+  input.accept = accept;
+  input.addEventListener('change', (event) => {
+    const inputResult = event.target as HTMLInputElement;
+    if (accept === '.xml') {
+      const resultArray: string[] = inputResult.files[0].path.split('\\');
+      resultArray.pop();
+      inputValue = resultArray.join('\\');
+    } else {
+      inputValue = inputResult.files[0].path;
+    }
+    inputElement.value = inputValue;
+  });
+  input.click();
 }
 
 export const getTableData = (): TableRow[] => {

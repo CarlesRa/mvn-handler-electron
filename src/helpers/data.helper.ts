@@ -164,7 +164,7 @@ const copyToTomcat = async (): Promise<void> => {
   for(const row of tableData) {
     let errorOnGenerateWar = false;
     const warPath = mainProcess.path.join(destinationPath.value, row.newWarName);
-    await executeCommand('/c',`xcopy /Y /I ${row.warPath} ${warPath}`)
+    await executeCommand('/c',`xcopy /F /I /Y  ${row.warPath} ${warPath}`)
       .catch((error) => {
         errorCopyingWar(error);
         errorOnGenerateWar = true;
